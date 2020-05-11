@@ -51,17 +51,22 @@ test.mean.std <- select(test.data,contains('mean'),contains('std'))
 train.mean.std <- select(train.data,contains('mean'),contains('std'))
 
 test.final <- cbind.data.frame(test.subject[,1],test.activities[,3],test.mean.std)
-names(test.final)[1:2] <- c('Test Subject ID Number','Activity Name')
+names(test.final)[1:2] <- c('Subject ID Number','Activity Name')
 train.final <- cbind.data.frame(train.subject[,1],train.activities[,3],train.mean.std)
-names(train.final)[1:2] <- c('Train Subject ID Number','Activity Name')
+names(train.final)[1:2] <- c('Subject ID Number','Activity Name')
 
 ## Create Dataset Showing Average of Each Variable
 ## for Each Activity and Each Subject
 test.summary <- test.final  %>%
-      group_by(`Test Subject ID Number`,`Activity Name`)  %>%
+      group_by(`Subject ID Number`,`Activity Name`)  %>%
       summarise_all(list(mean = mean))
 
 train.summary <- train.final  %>%
-      group_by(`Train Subject ID Number`,`Activity Name`)  %>%
+      group_by(`Subject ID Number`,`Activity Name`)  %>%
       summarise_all(list(mean = mean))
-  
+
+## Combine summary tables
+final.summary <- merge(test.summary,train.summary,all = TRUE)
+
+## Create .txt file for uploading data table
+write.table(test.summary,file = 'final.summary.txt',row.names = FALSE)
